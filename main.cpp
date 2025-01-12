@@ -15,6 +15,10 @@ void displayMenu(int* choice);
 void clearTerminal();
 Fruits addNewElement();
 void wait();
+void merge(vector<Fruits>* section, int lowerB, int middle, int upperB);
+void mergeSort(vector<Fruits>* section, int lowerB, int upperB);
+bool containsBS(int num, vector<Fruits>* section, int lowerB, int upperB);
+int displaySection(int size, vector<Fruits> section);
 
 int main()
 {
@@ -117,6 +121,28 @@ int main()
             size--;
             break;
         
+        case 5:
+            mergeSort(&section, 0, size-1);
+            break;
+
+        case 6:
+            cout << "What element (ID) do you want to search?" << endl;
+            cin >> elementSelected;
+            if(containsBS(elementSelected, &section, 0, size-1))
+            {
+                cout << "This element is in your section!" << endl;
+            }
+            else
+            {
+                cout << "This element is not in your section!" << endl;
+            }
+            wait();
+            break;
+
+        case 7:
+            displaySection(size, section);
+            break;
+
         default:
             cout << "This choice isn't handle. Please, chose an option between 0 and 4." << endl;
             break;
@@ -131,6 +157,9 @@ void displayMenu(int* choice)
     cout << "2: retrieve an element." << endl;
     cout << "3: update an element." << endl;
     cout << "4: remove an element." << endl;
+    cout << "5: sort elements." << endl;
+    cout << "6: search for an element." << endl;
+    cout << "7: see all elements." << endl;
     cout << "0: quit." << endl;
     cin >> *choice;
 }
@@ -166,4 +195,105 @@ void wait()
 {
     string wait;
     cin >> wait;
+}
+
+void merge(vector<Fruits>* section, int lowerB, int middle, int upperB)
+{
+    int sizeLeft = middle - lowerB + 1;
+    int sizeRight = upperB - middle;
+
+    vector<Fruits> leftVector;
+    vector<Fruits> rightVector;
+
+    for (int i = 0; i < sizeLeft; i++)
+    {
+        leftVector.push_back((*section)[lowerB + i]);
+    }
+
+    for (int i = 0; i < sizeRight; i++)
+    {
+        rightVector.push_back((*section)[middle + 1 + i]);
+    }
+    
+    int i, j, k;
+    i = 0; //left array index
+    j = 0; //right array index
+    k = lowerB; //main array index
+
+    while ((i < sizeLeft) && (j < sizeRight))
+    {
+        int a = leftVector.at(i).GetID();
+        int b = rightVector.at(j).GetID();
+        if (a <= b)
+        {
+            (*section)[k] = leftVector[i];
+            i++;
+        }
+        else
+        {
+            (*section)[k] = rightVector[j];
+            j++;
+        }
+        k++;
+    }
+    
+    while(i < sizeLeft)
+    {
+        (*section)[k] = leftVector[i];
+        i++;
+        k++;
+    }
+
+    while(j < sizeRight)
+    {
+        (*section)[k] = rightVector[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(vector<Fruits>* section, int lowerB, int upperB)
+{
+    if (lowerB >= upperB)
+    {
+        return;
+    }
+    
+    int middle = lowerB + (upperB - lowerB) / 2;
+    mergeSort(section, lowerB, middle);
+    mergeSort(section, middle + 1, upperB);
+    merge(section, lowerB, middle, upperB);
+}
+
+bool containsBS(int num, vector<Fruits>* section, int lowerB, int upperB)
+{
+    if (upperB >= lowerB)
+    {
+        int middleElementIndex = lowerB + (upperB - lowerB)/2;
+        int a = section->at(middleElementIndex).GetID();
+        if (num == a)
+        {
+            return true;
+        }
+        else if (num < a)
+        {
+            return containsBS(num, section, lowerB, middleElementIndex-1);
+        }
+        else
+        {
+            return containsBS(num, section, middleElementIndex+1, upperB);
+        }
+    }
+    return false;
+}
+
+int displaySection(int size, vector<Fruits> section)
+{
+    cout << "Here is your section!" << endl;
+    for (int i = 0; i < size; i++)
+    {
+        section.at(i).Display();
+    }
+    wait();
+    return 0;
 }

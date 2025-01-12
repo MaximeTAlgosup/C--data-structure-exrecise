@@ -11,5 +11,3 @@
 
 - Security
 - Documentation
-- Merging Sort
-- Binary Searching
